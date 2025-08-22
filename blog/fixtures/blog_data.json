@@ -1,0 +1,47 @@
+[
+  {
+    "model": "blog.author",
+    "pk": 1,
+    "fields": {
+      "user": 4
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 1,
+    "fields": {
+      "author": 1,
+      "title": "First Fixture Post",
+      "content": "This is a post loaded from a fixture. It is useful for populating the database with initial data.",
+      "created_at": "2025-08-21T12:00:00Z"
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 1,
+    "fields": {
+      "post": 1,
+      "content": "This is a comment for the first post.",
+      "created_at": "2025-08-21T12:01:00Z"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 2,
+    "fields": {
+      "author": 1,
+      "title": "Second Fixture Post",
+      "content": "Another post with a different ID.",
+      "created_at": "2025-08-21T12:05:00Z"
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 2,
+    "fields": {
+      "post": 2,
+      "content": "A comment for the second post.",
+      "created_at": "2025-08-21T12:06:00Z"
+    }
+  }
+]

@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 
-from blog.models import Post, Comment
+from blog.models import Post, Comment, Author
 from blog.serializer import PostSerializer, CommentSerializer, UserRegistrationSerializer, LoginSerializer
 from blog.permissions import IsAuthor
 class PostViewSet(viewsets.ModelViewSet):
@@ -14,6 +14,15 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAuthor]
+    
+    def get_permissions(self):
+        
+        if self.action == 'list':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthor]
+        return[permission() for permission in permission_classes]
+            
     
     def perform_create(self, serializer):
         author_profile = self.request.user.author
@@ -33,7 +42,6 @@ class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
     
     queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
