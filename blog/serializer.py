@@ -21,7 +21,7 @@ class PostSerializer(serializers.ModelSerializer):
     comments = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'created_at', 'comments']
+        fields = ['id', 'title', 'content', 'author', 'created_at', 'comments']
         read_only_fields = ['created_at']
 
 class UserRegistrationSerializer(serializers.Serializer):
