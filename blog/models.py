@@ -30,8 +30,11 @@ class Comment(models.Model):
         return f'Comment on {self.post.title}'
     
 @receiver(post_save, sender=User)
-def create_or_update_user_profile(sender, instance, created,**kwargs):
-    if created:
+def create_author_profile(sender, instance, created,**kwargs):
+    if created and not hasattr(instance, 'author'):
         Author.objects.create(user=instance)
-    instance.author.save()
-    
+
+@receiver(post_save, sender=User)
+def save_author_profile(sender, instance, **kwargs):
+    if hasattr(instance, 'author'):
+        instance.author.save()

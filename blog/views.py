@@ -3,8 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny
 
 from blog.models import Post, Comment, Author
 from blog.serializer import PostSerializer, CommentSerializer, UserRegistrationSerializer, LoginSerializer
@@ -12,28 +11,32 @@ from blog.permissions import IsAuthor
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAuthor]
     
     def get_permissions(self):
         
-        if self.action == 'list':
-            permission_classes = [AllowAny]
+        if self.action in ['list', 'retrieve']:
+            self.permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthor]
-        return[permission() for permission in permission_classes]
+            self.permission_classes = [IsAuthor]
+        return[permission() for permission in self.permission_classes]
             
     
     def perform_create(self, serializer):
-        author_profile = self.request.user.author
+        author_profile, created = Author.objects.get_or_create(user=self.request.user)
         serializer.save(author=author_profile)
     
     
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthor]
+            
+        return[permission() for permission in self.permission_classes]
 
 class UserRegistrationView(generics.CreateAPIView):
     
@@ -48,7 +51,7 @@ class LoginView(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
