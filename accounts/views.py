@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
-from blog.serializer import UserRegistrationSerializer
+from blog.serializers import UserRegistrationSerializer
 
 class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]
@@ -11,4 +11,4 @@ class UserRegistrationView(generics.CreateAPIView):
     
 class CustomAuthToken(ObtainAuthToken):
     permission_classes = [AllowAny]
-    render_class = api_settings.DEFAULT_RENDERER_CLASSES
+    renderer_class = api_settings.DEFAULT_RENDERER_CLASSES

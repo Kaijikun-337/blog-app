@@ -1,17 +1,18 @@
 from rest_framework import permissions
 
-class IsAuthor(permissions.BasePermission):
-    
+class IsAuthorOrReadOnly(permissions.BasePermission):
+
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
+
         return request.user and request.user.is_authenticated and hasattr(request.user, 'author')
-    
+
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        
+
         if hasattr(obj, 'author'):
             return obj.author.user == request.user
-        
+
         return False
